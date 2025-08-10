@@ -99,37 +99,54 @@ class MovieService:
             {"$set": update_data}
         )
 
-        if result.modified_count:
+        if result.modified_count > 0:
             return await self.get_movie_by_id(movie_id)
 
         return None
 
     async def delete_movie(self, movie_id: str) -> bool:
-        """Удаление фильма"""
+        """Удаление фильма по ID"""
+        logger.info(f"Удаление фильма с ID: {movie_id}")
         collection = self.get_collection()
 
         if not ObjectId.is_valid(movie_id):
+            logger.warning(f"Невалидный ID фильма: {movie_id}")
             return False
 
         result = await collection.delete_one({"_id": ObjectId(movie_id)})
-        return result.deleted_count > 0
+        
+        if result.deleted_count > 0:
+            logger.info(f"Фильм с ID {movie_id} успешно удален")
+            return True
+        else:
+            logger.warning(f"Фильм с ID {movie_id} не найден для удаления")
+            return False
 
-    async def get_movies_by_series(self, series_name: str, content_type: Optional[ContentType] = None) -> List[Movie]:
-        """Получение фильмов/сериалов по названию серии"""
+    async def update_movie_rating(self, movie_id: str, my_rating: int) -> Optional[Movie]:
+        """Обновление рейтинга фильма"""
+        logger.info(f"Обновление рейтинга фильма {movie_id} на {my_rating}")
         collection = self.get_collection()
 
-        query = {"series_name": series_name}
-        if content_type:
-            query["content_type"] = content_type
+        if not ObjectId.is_valid(movie_id):
+            logger.warning(f"Невалидный ID фильма: {movie_id}")
+            return None
 
-        cursor = collection.find(query).sort("year", 1)
-        movies = []
+        # Проверяем валидность рейтинга
+        if my_rating < 1 or my_rating > 100:
+            logger.warning(f"Невалидный рейтинг: {my_rating}")
+            return None
 
-        async for movie_doc in cursor:
-            movie_doc["_id"] = str(movie_doc["_id"])
-            movies.append(Movie(**movie_doc))
+        result = await collection.update_one(
+            {"_id": ObjectId(movie_id)},
+            {"$set": {"my_rating": my_rating}}
+        )
 
-        return movies
+        if result.modified_count > 0:
+            logger.info(f"Рейтинг фильма {movie_id} успешно обновлен")
+            return await self.get_movie_by_id(movie_id)
+        else:
+            logger.warning(f"Фильм с ID {movie_id} не найден для обновления рейтинга")
+            return None
 
 
 # Создаем экземпляр сервиса

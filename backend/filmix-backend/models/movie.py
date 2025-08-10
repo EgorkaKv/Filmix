@@ -26,6 +26,10 @@ class MovieCreate(MovieBase):
     """Модель для создания нового фильма/сериала"""
     pass
 
+class MovieUpdateRating(BaseModel):
+    """Модель для обновления рейтинга фильма"""
+    my_rating: int = Field(..., ge=1, le=100, description="Ваша оценка фильма от 1 до 100")
+
 class MovieUpdate(BaseModel):
     """Модель для обновления фильма/сериала"""
     title: Optional[str] = None

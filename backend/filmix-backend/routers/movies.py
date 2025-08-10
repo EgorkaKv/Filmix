@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Query
 from typing import List, Dict
-from models.movie import Movie, MovieCreate, MovieUpdate, ContentType
+from models.movie import Movie, MovieCreate, MovieUpdate, MovieUpdateRating, ContentType
 from services.movie_service import movie_service
 from services.tmdb_service import tmdb_service
 import logging
@@ -102,3 +102,57 @@ async def add_movie_from_tmdb(tmdb_id: int):
     except Exception as e:
         logger.error(f"Ошибка при добавлении фильма из TMDB: {e}")
         raise HTTPException(status_code=500, detail=f"Ошибка при добавлении фильма: {str(e)}")
+
+@router.delete("/{movie_id}")
+async def delete_movie(movie_id: str):
+    """Удалить фильм по ID"""
+    logger.info(f"Удаление фильма с ID: {movie_id}")
+    try:
+        # Проверяем, существует ли фильм
+        movie = await movie_service.get_movie_by_id(movie_id)
+        if movie is None:
+            logger.warning(f"Фильм с ID {movie_id} не найден")
+            raise HTTPException(status_code=404, detail="Фильм не найден")
+
+        # Удаляем фильм
+        success = await movie_service.delete_movie(movie_id)
+
+        if success:
+            logger.info(f"Фильм {movie.title} успешно удален")
+            return {"message": f"Фильм '{movie.title}' успешно удален"}
+        else:
+            logger.error(f"Не удалось удалить фильм с ID {movie_id}")
+            raise HTTPException(status_code=500, detail="Не удалось удалить фильм")
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Ошибка при удалении фильма {movie_id}: {e}")
+        raise HTTPException(status_code=500, detail=f"Ошибка при удалении фильма: {str(e)}")
+
+@router.patch("/{movie_id}/rating", response_model=Movie)
+async def update_movie_rating(movie_id: str, rating_data: MovieUpdateRating):
+    """Обновить рейтинг фильма"""
+    logger.info(f"Обновление рейтинга фильма {movie_id} на {rating_data.my_rating}")
+    try:
+        # Проверяем, существует ли фильм
+        existing_movie = await movie_service.get_movie_by_id(movie_id)
+        if existing_movie is None:
+            logger.warning(f"Фильм с ID {movie_id} не найден")
+            raise HTTPException(status_code=404, detail="Фильм не найден")
+
+        # Обновляем рейтинг
+        updated_movie = await movie_service.update_movie_rating(movie_id, rating_data.my_rating)
+
+        if updated_movie is None:
+            logger.error(f"Не удалось обновить рейтинг фильма с ID {movie_id}")
+            raise HTTPException(status_code=500, detail="Не удалось обновить рейтинг фильма")
+
+        logger.info(f"Рейтинг фильма {updated_movie.title} успешно обновлен на {rating_data.my_rating}")
+        return updated_movie
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Ошибка при обновлении рейтинга фильма {movie_id}: {e}")
+        raise HTTPException(status_code=500, detail=f"Ошибка при обновлении рейтинга: {str(e)}")

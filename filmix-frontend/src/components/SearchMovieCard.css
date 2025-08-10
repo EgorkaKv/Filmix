@@ -1,0 +1,87 @@
+.search-movie-card {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #fff;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease;
+}
+
+.search-movie-card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.search-movie-poster {
+  flex-shrink: 0;
+  width: 120px;
+  height: 180px;
+}
+
+.search-movie-poster img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.search-movie-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.search-movie-title {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.search-movie-original-title {
+  margin: 0;
+  font-size: 1rem;
+  color: #666;
+  font-style: italic;
+}
+
+.search-movie-year,
+.search-movie-rating,
+.search-movie-type {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.search-movie-overview {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #444;
+  line-height: 1.5;
+  flex: 1;
+}
+
+.add-movie-button {
+  align-self: flex-start;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.3s ease;
+  margin-top: auto;
+}
+
+.add-movie-button:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
+.add-movie-button:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}

@@ -15,3 +15,20 @@ export interface Movie {
   _id: string;
 }
 
+export interface SearchMovie {
+  tmdb_id: number;
+  title: string;
+  original_title: string;
+  release_date: string;
+  poster_path: string;
+  overview: string;
+  vote_average: number;
+  content_type: "MOVIE" | "SERIES";
+}
+
+export interface SearchResponse {
+  total_results: number;
+  total_pages: number;
+  current_page: number;
+  results: SearchMovie[];
+}

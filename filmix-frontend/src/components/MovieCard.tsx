@@ -29,7 +29,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
           <div className="ratings">
             <span className="rating">⭐ {movie.rating.toFixed(1)}</span>
             {movie.my_rating && (
-              <span className="my-rating">Моя оценка: {movie.my_rating}</span>
+              <span className="my-rating">{movie.my_rating}</span>
             )}
           </div>
           {movie.watch_date && (

@@ -1,7 +1,8 @@
-from fastapi import APIRouter, HTTPException
-from typing import List
+from fastapi import APIRouter, HTTPException, Query
+from typing import List, Dict
 from models.movie import Movie, MovieCreate, MovieUpdate, ContentType
 from services.movie_service import movie_service
+from services.tmdb_service import tmdb_service
 import logging
 
 # Создаем логгер для этого модуля
@@ -49,3 +50,55 @@ async def create_movie(movie: MovieCreate):
     except Exception as e:
         logger.error(f"Ошибка при создании фильма: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/search/tmdb", response_model=Dict)
+async def search_movies(query: str = Query(..., description="Поисковый запрос")):
+    """Поиск фильмов в TMDB"""
+    logger.info(f"Поиск фильмов в TMDB: {query}")
+    try:
+        # Поиск в TMDB
+        search_results = await tmdb_service.search_movies(query)
+
+        # Форматирование результатов
+        formatted_results = tmdb_service.format_search_results(search_results, ContentType.MOVIE)
+
+        result = {
+            "total_results": search_results.get("total_results", 0),
+            "total_pages": search_results.get("total_pages", 0),
+            "current_page": search_results.get("page", 1),
+            "results": formatted_results
+        }
+
+        logger.info(f"Найдено {len(formatted_results)} фильмов")
+        return result
+
+    except Exception as e:
+        logger.error(f"Ошибка при поиске фильмов: {e}")
+        raise HTTPException(status_code=500, detail=f"Ошибка при поиске фильмов: {str(e)}")
+
+@router.post("/add-from-tmdb/{tmdb_id}", response_model=Movie)
+async def add_movie_from_tmdb(tmdb_id: int):
+    """Добавить фильм из TMDB по ID"""
+    logger.info(f"Добавление фильма из TMDB с ID: {tmdb_id}")
+    try:
+        # Проверяем, не существует ли уже фильм с таким TMDB ID
+        # (Пока пропускаем эту проверку, можно добавить позже)
+
+        # Получаем детали фильма из TMDB
+        tmdb_data = await tmdb_service.get_movie_details(tmdb_id)
+
+        # Конвертируем данные TMDB в формат нашей модели
+        movie_data = tmdb_service.convert_tmdb_to_movie_data(tmdb_data, ContentType.MOVIE)
+
+        # Создаем объект MovieCreate
+        movie_create = MovieCreate(**movie_data)
+
+        # Сохраняем в базу данных
+        new_movie = await movie_service.create_movie(movie_create)
+
+        logger.info(f"Фильм успешно добавлен: {new_movie.title}")
+        return new_movie
+
+    except Exception as e:
+        logger.error(f"Ошибка при добавлении фильма из TMDB: {e}")
+        raise HTTPException(status_code=500, detail=f"Ошибка при добавлении фильма: {str(e)}")

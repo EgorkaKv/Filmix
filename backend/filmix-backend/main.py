@@ -1,4 +1,7 @@
 from fastapi import FastAPI
+from dotenv import load_dotenv
+load_dotenv()
+
 from contextlib import asynccontextmanager
 from database.mongodb import connect_to_mongo, close_mongo_connection
 from routers import movies, series
@@ -6,12 +9,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from utils.logger import filmix_logger
 import logging
 
+
 # Инициализируем логгирование
 logger = logging.getLogger("filmix.main")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info("Запуск приложения Filmix API")
+
     # Подключение к базе данных при запуске
     try:
         await connect_to_mongo()

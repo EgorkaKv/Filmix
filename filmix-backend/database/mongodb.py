@@ -13,8 +13,11 @@ class MongoDB:
 # Инициализация подключения к MongoDB
 async def connect_to_mongo():
     try:
-        mongodb_url = os.getenv("MONGODB_URL", "mongodb://localhost:27017")
-        logger.info(f"Подключение к MongoDB: {mongodb_url}")
+        mongodb_url = os.getenv("MONGODB_URL")
+        if not mongodb_url:
+            raise ValueError("Переменная окружения MONGODB_URL не установлена")
+
+        logger.info(f"Подключение к MongoDB")
 
         MongoDB.client = AsyncIOMotorClient(mongodb_url)
         MongoDB.database = MongoDB.client.filmix

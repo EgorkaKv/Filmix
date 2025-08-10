@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from database.mongodb import connect_to_mongo, close_mongo_connection
 from routers import movies, series
+from fastapi.middleware.cors import CORSMiddleware
 from utils.logger import filmix_logger
 import logging
 
@@ -32,21 +33,28 @@ app = FastAPI(
     lifespan=lifespan
 )
 
+# Настройка CORS для фронтенда
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # В продакшене заменить на конкретные домены
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 # Подключение роутеров
 app.include_router(movies.router)
 app.include_router(series.router)
 
 @app.get("/")
 async def root():
-    logger.info("Запрос к корневому эндпоинту")
-    return {"message": "Добро пожаловать в Filmix API"}
+    return {
+        "message": "Filmix Backend API",
+        "version": "1.0.0",
+        "docs": "/docs"
+    }
+
 
 @app.get("/health")
 async def health_check():
-    logger.debug("Проверка здоровья системы")
-    return {"status": "OK"}
-
-if __name__ == "__main__":
-    import uvicorn
-    logger.info("Запуск сервера через uvicorn")
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    return {"status": "healthy"}

@@ -52,7 +52,7 @@ class MovieService:
 
         logger.info(f"Запрос к базе: {query}")
 
-        cursor = collection.find(query)
+        cursor = collection.find(query).sort("my_rating", -1)
         logger.info(f"Курсор создан: {cursor}")
 
         movies = []

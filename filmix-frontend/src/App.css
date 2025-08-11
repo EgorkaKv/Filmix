@@ -57,11 +57,61 @@ body {
   margin: 50px 0;
 }
 
-.no-movies {
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
   text-align: center;
-  font-size: 1.2rem;
+  gap: 20px;
+}
+
+.loading-container h1 {
+  font-size: 3rem;
+  margin: 0;
+  background: linear-gradient(45deg, #646cff, #61dafb);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.loading-container .loading-text {
+  font-size: 1.4rem;
+  color: #ccc;
+  margin: 0;
+}
+
+.loading-container .loading-note {
+  font-size: 1rem;
   color: #888;
-  margin: 50px 0;
+  margin: 0;
+  font-style: italic;
+}
+
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  text-align: center;
+  gap: 20px;
+}
+
+.error-container h1 {
+  font-size: 3rem;
+  margin: 0;
+  background: linear-gradient(45deg, #646cff, #61dafb);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.error-container .error-text {
+  font-size: 1.4rem;
+  color: #ff6b6b;
+  margin: 0;
 }
 
 /* Убираем старые стили */

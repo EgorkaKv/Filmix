@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import MovieCard from '../components/MovieCard';
 import Footer from '../components/Footer';
+import Spinner from '../components/Spinner';
 import type { Movie } from '../types/Movie';
 
 const HomePage: React.FC = () => {
@@ -15,7 +16,7 @@ const HomePage: React.FC = () => {
         const apiUrl = import.meta.env.VITE_API_BASE_URL;
         const endpoint = import.meta.env.VITE_MOVIES_ENDPOINT;
         const response = await fetch(`${apiUrl}${endpoint}`);
-        console.log(response);
+        // console.log(response);
 
         if (!response.ok) {
           throw new Error('Ошибка загрузки данных');
@@ -37,8 +38,12 @@ const HomePage: React.FC = () => {
   if (loading) {
     return (
       <div className="app">
-        <h1>Filmix</h1>
-        <div className="loading">Загрузка фильмов...</div>
+        <div className="loading-container">
+          <h1>Filmix</h1>
+          <p className="loading-text">Загрузка фильмов...</p>
+          <Spinner />
+          <p className="loading-note">первое открытие сайта может занимать несколько минут :(</p>
+        </div>
       </div>
     );
   }
@@ -46,8 +51,10 @@ const HomePage: React.FC = () => {
   if (error) {
     return (
       <div className="app">
-        <h1>Filmix</h1>
-        <div className="error">{error}</div>
+        <div className="error-container">
+          <h1>Filmix</h1>
+          <p className="error-text">{error}</p>
+        </div>
       </div>
     );
   }

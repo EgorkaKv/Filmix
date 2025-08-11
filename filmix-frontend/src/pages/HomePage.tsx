@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import MovieCard from '../components/MovieCard';
+import Footer from '../components/Footer';
 import type { Movie } from '../types/Movie';
 
 const HomePage: React.FC = () => {
@@ -52,6 +53,7 @@ const HomePage: React.FC = () => {
   }
 
   return (
+    <>
     <div className="app">
       <header className="app-header">
         <h1>Filmix</h1>
@@ -67,7 +69,11 @@ const HomePage: React.FC = () => {
           ))
         )}
       </main>
+
+
     </div>
+      <Footer />
+    </>
   );
 };
 
